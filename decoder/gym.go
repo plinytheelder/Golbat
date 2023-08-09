@@ -8,6 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"golbat/config"
 	"golbat/db"
+	"golbat/external"
 	"golbat/pogo"
 	"golbat/util"
 	"golbat/webhooks"
@@ -402,6 +403,7 @@ func createGymWebhooks(oldGym *Gym, gym *Gym) {
 			InBattle:       func() bool { return gym.InBattle.ValueOrZero() != 0 }(),
 		}
 
+		external.UpdateGymCount(areas)
 		webhooks.AddMessage(webhooks.GymDetails, gymDetails, areas)
 	}
 
@@ -451,6 +453,7 @@ func createGymWebhooks(oldGym *Gym, gym *Gym) {
 				"ar_scan_eligible":       gym.ArScanEligible.ValueOrZero(),
 			}
 
+			external.UpdateRaidCount(areas, gym.RaidLevel.ValueOrZero())
 			webhooks.AddMessage(webhooks.Raid, raidHook, areas)
 		}
 	}

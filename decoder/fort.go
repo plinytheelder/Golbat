@@ -5,6 +5,7 @@ import (
 	"github.com/jellydator/ttlcache/v3"
 	log "github.com/sirupsen/logrus"
 	"golbat/db"
+	"golbat/external"
 	"golbat/pogo"
 	"golbat/webhooks"
 	"net/url"
@@ -131,6 +132,7 @@ func CreateFortWebHooks(old *FortWebhook, new *FortWebhook, change FortChange) {
 			"change_type": change.String(),
 			"new":         new,
 		}
+		external.UpdateFortCount(areas, new.Type, "addition")
 		webhooks.AddMessage(webhooks.FortUpdate, hook, areas)
 	} else if change == REMOVAL {
 		areas := MatchStatsGeofence(old.Location.Latitude, old.Location.Longitude)
@@ -138,6 +140,7 @@ func CreateFortWebHooks(old *FortWebhook, new *FortWebhook, change FortChange) {
 			"change_type": change.String(),
 			"old":         old,
 		}
+		external.UpdateFortCount(areas, new.Type, "removal")
 		webhooks.AddMessage(webhooks.FortUpdate, hook, areas)
 	} else if change == EDIT {
 		areas := MatchStatsGeofence(new.Location.Latitude, new.Location.Longitude)
@@ -183,6 +186,7 @@ func CreateFortWebHooks(old *FortWebhook, new *FortWebhook, change FortChange) {
 				"old":         old,
 				"new":         new,
 			}
+			external.UpdateFortCount(areas, new.Type, "edit")
 			webhooks.AddMessage(webhooks.FortUpdate, hook, areas)
 		}
 	}
