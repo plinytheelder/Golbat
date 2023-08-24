@@ -669,7 +669,7 @@ func decodeGMO(ctx context.Context, protoData *ProtoData, scanParameters decoder
 	if scanParameters.ProcessCells {
 		decoder.UpdateClientMapS2CellBatch(ctx, dbDetails, newMapCells)
 		if scanParameters.ProcessGyms || scanParameters.ProcessPokestops {
-			decoder.ClearRemovedForts(ctx, dbDetails, newMapCells)
+			go decoder.ClearRemovedForts(context.Background(), dbDetails, newMapCells)
 		}
 
 	}
