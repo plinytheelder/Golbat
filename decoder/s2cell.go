@@ -105,5 +105,5 @@ func (tracker *EmptyCellTracker) ShouldConsiderEmpty(cellId uint64) bool {
 	if !exists {
 		return false
 	}
-	return count >= 3
+	return count >= 5
 }
