@@ -625,6 +625,7 @@ func decodeGMO(ctx context.Context, protoData *ProtoData, scanParameters decoder
 	var newMapPokemon []decoder.RawMapPokemonData
 	var newClientWeather []decoder.RawClientWeatherData
 	var newMapCells []uint64
+	var cellsToBeCleaned []uint64
 
 	for _, mapCell := range decodedGmo.MapCell {
 		// Track empty cells
@@ -637,6 +638,7 @@ func decodeGMO(ctx context.Context, protoData *ProtoData, scanParameters decoder
 		} else {
 			emptyCellTracker.ResetCount(mapCell.S2CellId)
 			newMapCells = append(newMapCells, mapCell.S2CellId)
+			cellsToBeCleaned = append(cellsToBeCleaned, mapCell.S2CellId)
 		}
 		timestampMs := uint64(mapCell.AsOfTimeMs)
 		for _, fort := range mapCell.Fort {
@@ -672,7 +674,7 @@ func decodeGMO(ctx context.Context, protoData *ProtoData, scanParameters decoder
 			go func() {
 				ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 				defer cancel()
-				decoder.ClearRemovedForts(ctx, dbDetails, newMapCells)
+				decoder.ClearRemovedForts(ctx, dbDetails, cellsToBeCleaned)
 			}()
 		}
 
